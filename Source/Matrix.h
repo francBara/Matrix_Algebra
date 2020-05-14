@@ -16,6 +16,7 @@ class Matrix
 		void free();
 		void printMatrix();
 		void randomGenerate();
+		void getIdentity();
 		int Determinant();
 		Matrix Transposed();
 
@@ -23,4 +24,3 @@ class Matrix
 		int calcDeterminant(int, int *);
 	
 };
-

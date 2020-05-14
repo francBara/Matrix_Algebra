@@ -84,14 +84,35 @@ int Matrix::Determinant()
 {
 	if (calcedDet)
 	{
-		std::cout << "Already done it!\n";
+		//std::cout << "Already done it!\n";
 		return det;
 	}
 		
 	int * minorQueue = new int [rows-1];
 	det = calcDeterminant(0, minorQueue);
 	calcedDet = true;
+	delete[] minorQueue;
 	return det;
+}
+
+void Matrix::getIdentity()
+{
+	int i,j;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			if (i == j)
+			{
+				matrix[i][j] = 1;
+			}
+			else
+			{
+				matrix[i][j] = 0;
+			}
+		}
+	}
 }
 
 int Matrix::calcDeterminant(int ind, int * minorQueue)
@@ -99,6 +120,7 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 	int tot = 0;
 	int tmpDet;
 	int tmpI, tmpJ;
+	bool foundCheck = false;
 	int i;
 
 	if (rows - ind == 1)
@@ -113,6 +135,49 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 				return matrix[ind][i];
 			}
 		}
+	}
+	else if (rows - ind == 2)
+	{
+		//std::cout << "Square algorithm\n";
+		int * activeColumns = new int [2];
+		int j;
+		for (i = 0, j = 0; i < columns; i++)
+		{
+			if (!isIn(minorQueue, ind, i))
+			{
+				activeColumns[j] = i;
+				j++;
+			}
+		}
+
+		tot = matrix[ind][activeColumns[0]] * matrix[ind+1][activeColumns[1]];
+		tot = tot - matrix[ind][activeColumns[1]] * matrix[ind+1][activeColumns[0]];
+		delete[] activeColumns;
+		return tot;
+	}
+	//Sarrus algorithm
+	else if (rows - ind == 3)
+	{
+		//std::cout << "Sarrus algorithm\n";
+		int * activeColumns = new int [3];
+		int j;
+		for (i = 0, j = 0; i < columns; i++)
+		{
+			if (!isIn(minorQueue, ind, i))
+			{
+				activeColumns[j] = i;
+				j++;
+			}	
+		}
+
+		tot = matrix[ind][activeColumns[0]] * matrix[ind+1][activeColumns[1]] * matrix[ind+2][activeColumns[2]];
+		tot = tot + matrix[ind][activeColumns[1]] * matrix[ind+1][activeColumns[2]] * matrix[ind+2][activeColumns[0]];
+		tot = tot + matrix[ind][activeColumns[2]] * matrix[ind+1][activeColumns[0]] * matrix[ind+2][activeColumns[1]];
+		tot = tot - matrix[ind+2][activeColumns[0]] * matrix[ind+1][activeColumns[1]] * matrix[ind][activeColumns[2]];
+		tot = tot - matrix[ind+2][activeColumns[1]] * matrix[ind+1][activeColumns[2]] * matrix[ind][activeColumns[0]];
+		tot = tot - matrix[ind+2][activeColumns[2]] * matrix[ind+1][activeColumns[0]] * matrix[ind][activeColumns[1]];
+		delete[] activeColumns;
+		return tot;
 	}
 
 	tmpI = 1;

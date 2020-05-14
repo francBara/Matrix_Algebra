@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
 #include "Matrix.h"
 //#include "MatList.cpp"
 
 Matrix inputMatrix();
+void showMatrixes(std::vector<Matrix>);
 int numsLength(std::string);
 int * getNumbers(std::string);
-void copyMatrix(Matrix, Matrix);
 
 int main()
 {
@@ -16,6 +17,7 @@ int main()
 	int tmpRows;
 	int tmpColumns;
 	std::vector<Matrix> matrixes;
+	int tmpTime;
 	int i,j;
 
 	std::cout << "MATRIX\n";
@@ -26,8 +28,9 @@ int main()
 	{
 		std::cout << "1. | Input and save a matrix to work on\n";
 		std::cout << "2. | Generate a random matrix\n";
-		std::cout << "3. | Shows current saved matrixes\n";
-		std::cout << "4. | Calculate the determinant of a saved matrix\n";
+		std::cout << "3. | Save an identity matrix\n";
+		std::cout << "4. | Shows current saved matrixes\n";
+		std::cout << "5. | Calculate the determinant of a saved matrix\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
@@ -37,7 +40,7 @@ int main()
 			std::cout << "Insert numbers separated by spaces, press enter to add new rows and type an empty space to confirm\n";
 			matrixes.push_back(inputMatrix());
 
-			std::cout << "Insert a name for the matrix\n";
+			std::cout << "Insert a name for the matrix:\n";
 			std::cin >> matrixes.back().name;
 			system("clear");
 		}
@@ -45,12 +48,12 @@ int main()
 		{
 			std::cout << "Insert matrix rows:\n";
 			std::cin >> tmpRows;
-			std::cout << "Insert matrix columns\n";
+			std::cout << "Insert matrix columns:\n";
 			std::cin >> tmpColumns;
 			
 			matrixes.push_back(Matrix(tmpRows, tmpColumns));
 
-			std::cout << "Insert a name for the matrix\n";
+			std::cout << "Insert a name for the matrix:\n";
 			std::cin >> matrixes.back().name;
 
 			matrixes.back().randomGenerate();
@@ -59,29 +62,44 @@ int main()
 		}
 		else if (menu == "3")
 		{
-			std::cout << "SAVED MATRIXES\n";
-			for (i = 0; i < matrixes.size(); i++)
-			{
-				std::cout << "---\n";
-				std::cout << matrixes[i].name << "\n\n";
-				matrixes[i].printMatrix();
-				if (matrixes[i].calcedDet)
-				{
-					std::cout << "Determinant: " << matrixes[i].det << "\n";
-				}
-				std::cout << "---\n";
-			}
-			std::cout << "\n";
+			std::cout << "Insert matrix dimension:\n";
+			std::cin >> tmpRows;
+
+			matrixes.push_back(Matrix(tmpRows, tmpRows));
+
+			std::cout << "Insert a name for the matrix:\n";
+			std::cin >> matrixes.back().name;
+
+			matrixes.back().getIdentity();
+
+			system("clear");
 		}
 		else if (menu == "4")
 		{
+			showMatrixes(matrixes);
+		}
+		else if (menu == "5")
+		{
+			system("clear");
+
+			showMatrixes(matrixes);
+
 			std::cout << "Insert the name of the matrix\n";
 			std::cin >> matName;
 			for (i = 0; i < matrixes.size(); i++)
 			{
 				if (matrixes[i].name == matName)
 				{
-					std::cout << matrixes[i].Determinant() << "\n";
+					if (matrixes[i].rows == matrixes[i].columns)
+					{
+						tmpTime = time(NULL);
+						std::cout << "Determinant: " <<  matrixes[i].Determinant() << "\n";
+						std::cout << "Calculated in " << time(NULL) - tmpTime << " seconds\n";
+					}
+					else
+					{
+						std::cout << "The matrix must be a square\n";
+					}
 					break;
 				}
 			}
@@ -97,6 +115,25 @@ int main()
 			system("clear");
 		}
 	}
+}
+
+void showMatrixes(std::vector<Matrix> mats)
+{
+	int i;
+
+	std::cout << "SAVED MATRIXES\n";
+	for (i = 0; i < mats.size(); i++)
+	{
+		std::cout << "---\n";
+		std::cout << mats[i].name << "\n\n";
+		mats[i].printMatrix();
+		if (mats[i].calcedDet)
+		{
+			std::cout << "Determinant: " << mats[i].det << "\n";
+		}
+		std::cout << "---\n";
+	}
+	std::cout << "\n";
 }
 
 Matrix inputMatrix()
@@ -205,11 +242,3 @@ int numsLength(std::string row)
 	return len;
 }
 
-void copyMatrix(Matrix mat1, Matrix mat2)
-{
-	int i,j;
-	std::cout << "DEBUG\n";
-	mat1.printMatrix();
-	mat2.printMatrix();
-	std::cout << "DEBUG\n";
-}
