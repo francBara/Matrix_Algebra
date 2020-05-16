@@ -170,10 +170,24 @@ int main()
 					}
 					else if (menu == "7")
 					{
-						tmpMatrix = matrices[i].Inverse();
-						std::cout << matName << " inverse:\n";
-						tmpMatrix.printMatrix();
-						matrices = saveMatrix(tmpMatrix, matrices);
+						if (matrices[i].rows == matrices[i].columns)
+						{
+							if (matrices[i].Determinant().num != 0)
+							{
+								tmpMatrix = matrices[i].Inverse();
+								std::cout << matName << " inverse:\n";
+								tmpMatrix.printMatrix();
+								matrices = saveMatrix(tmpMatrix, matrices);
+							}
+							else
+							{
+								std::cout << "The determinant of the matrix must be different from 0\n";
+							}
+						}
+						else
+						{
+							std::cout << "The matrix must be a square\n";
+						}
 						break;
 					}
 					else if (menu == "8")
