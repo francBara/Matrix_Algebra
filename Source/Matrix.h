@@ -1,12 +1,20 @@
+#ifndef MATRIX_H
+#define MATRIX_H
+
+#include "Fract.h"
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+
 class Matrix
 {	
 
 	public:
-		int ** matrix;
+		Fract ** matrix;
 		int rows;
 		int columns;
 		std::string name;
-		int det;
+		Fract det;
 		bool calcedDet = false;
 
 	public:
@@ -17,10 +25,15 @@ class Matrix
 		void printMatrix();
 		void randomGenerate();
 		void getIdentity();
-		int Determinant();
+		Fract Determinant();
 		Matrix Transposed();
+		Matrix CofactorMatrix();
+		Matrix Inverse();
+		void scalarDivide(Fract);
 
 	private:
-		int calcDeterminant(int, int *);
-	
+		Fract calcDeterminant(int, int *);
+		Fract Cofactor(int, int);
 };
+
+#endif

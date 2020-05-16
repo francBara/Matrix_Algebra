@@ -1,8 +1,4 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
 #include "Matrix.h"
-#include "ArrayUtils.h"
 
 Matrix::Matrix()
 {
@@ -14,11 +10,11 @@ Matrix::Matrix(int r, int c)
 {
 	int i;
 	
-	matrix = new int * [r];
+	matrix = new Fract * [r];
 
 	for (i = 0; i < r; i++)
 	{
-		matrix[i] = new int [c]; 	
+		matrix[i] = new Fract [c]; 	
 	}
 
 	rows = r;
@@ -29,11 +25,11 @@ void Matrix::init(int r, int c)
 {
 	int i;
 
-	matrix = new int * [r];
+	matrix = new Fract * [r];
 
 	for (i = 0; i < r; i++)
 	{
-		matrix[i] = new int [c];
+		matrix[i] = new Fract [c];
 	}	
 
 	rows = r;
@@ -59,7 +55,8 @@ void Matrix::printMatrix()
 	{
 		for (j = 0; j < columns; j++)
 		{
-			std::cout << matrix[i][j] << " ";
+			matrix[i][j].print();
+			std::cout << " ";
 		}
 		std::cout << "\n";
 	}
@@ -75,12 +72,12 @@ void Matrix::randomGenerate()
 	{
 		for (j = 0; j < columns; j++)
 		{
-			matrix[i][j] = rand() % 100;
+			matrix[i][j].num = rand() % 100;
 		}
 	}	
 }
 
-int Matrix::Determinant()
+Fract Matrix::Determinant()
 {
 	if (calcedDet)
 	{
@@ -105,27 +102,27 @@ void Matrix::getIdentity()
 		{
 			if (i == j)
 			{
-				matrix[i][j] = 1;
+				matrix[i][j].num = 1;
 			}
 			else
 			{
-				matrix[i][j] = 0;
+				//matrix[i][j].num = 0;
 			}
 		}
 	}
 }
 
-int Matrix::calcDeterminant(int ind, int * minorQueue)
+Fract Matrix::calcDeterminant(int ind, int * minorQueue)
 {
-	int tot = 0;
-	int tmpDet;
+	Fract tot(0);
+	Fract tmpDet;
 	int tmpI, tmpJ;
 	bool foundCheck = false;
 	int i;
 
+	//When it's a single element the determinant is the element itself
 	if (rows - ind == 1)
 	{
-		//std::cout << "Single element\n";
 		for (i = 0; i < columns; i++)
 		{
 			if (!isIn(minorQueue, ind, i))
@@ -136,9 +133,9 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 			}
 		}
 	}
+	//Square algorithm
 	else if (rows - ind == 2)
 	{
-		//std::cout << "Square algorithm\n";
 		int * activeColumns = new int [2];
 		int j;
 		for (i = 0, j = 0; i < columns; i++)
@@ -150,8 +147,8 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 			}
 		}
 
-		tot = matrix[ind][activeColumns[0]] * matrix[ind+1][activeColumns[1]];
-		tot = tot - matrix[ind][activeColumns[1]] * matrix[ind+1][activeColumns[0]];
+		tot = matrix[ind][activeColumns[0]].per(matrix[ind+1][activeColumns[1]]);
+		tot = tot.sub(matrix[ind][activeColumns[1]].per(matrix[ind+1][activeColumns[0]]));
 		delete[] activeColumns;
 		return tot;
 	}
@@ -170,12 +167,12 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 			}	
 		}
 
-		tot = matrix[ind][activeColumns[0]] * matrix[ind+1][activeColumns[1]] * matrix[ind+2][activeColumns[2]];
-		tot = tot + matrix[ind][activeColumns[1]] * matrix[ind+1][activeColumns[2]] * matrix[ind+2][activeColumns[0]];
-		tot = tot + matrix[ind][activeColumns[2]] * matrix[ind+1][activeColumns[0]] * matrix[ind+2][activeColumns[1]];
-		tot = tot - matrix[ind+2][activeColumns[0]] * matrix[ind+1][activeColumns[1]] * matrix[ind][activeColumns[2]];
-		tot = tot - matrix[ind+2][activeColumns[1]] * matrix[ind+1][activeColumns[2]] * matrix[ind][activeColumns[0]];
-		tot = tot - matrix[ind+2][activeColumns[2]] * matrix[ind+1][activeColumns[0]] * matrix[ind][activeColumns[1]];
+		tot = matrix[ind][activeColumns[0]].per(matrix[ind+1][activeColumns[1]].per(matrix[ind+2][activeColumns[2]]));
+		tot = tot.add(matrix[ind][activeColumns[1]].per(matrix[ind+1][activeColumns[2]].per(matrix[ind+2][activeColumns[0]])));
+		tot = tot.add(matrix[ind][activeColumns[2]].per(matrix[ind+1][activeColumns[0]].per(matrix[ind+2][activeColumns[1]])));
+		tot = tot.sub(matrix[ind+2][activeColumns[0]].per(matrix[ind+1][activeColumns[1]].per(matrix[ind][activeColumns[2]])));
+		tot = tot.sub(matrix[ind+2][activeColumns[1]].per(matrix[ind+1][activeColumns[2]].per(matrix[ind][activeColumns[0]])));
+		tot = tot.sub(matrix[ind+2][activeColumns[2]].per(matrix[ind+1][activeColumns[0]].per(matrix[ind][activeColumns[1]])));
 		delete[] activeColumns;
 		return tot;
 	}
@@ -192,11 +189,6 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 			//std::cout << "Current row: " << ind << std::endl;
 			minorQueue[ind] = i;
 			//std::cout << "Canceled columns:\n";
-			
-			for (int j = 0; j < ind; j++)
-			{
-				//std::cout << minorQueue[j] << std::endl;
-			}
 		
 			//std::cout << "\n";
 
@@ -207,12 +199,12 @@ int Matrix::calcDeterminant(int ind, int * minorQueue)
 			if ((tmpI + tmpJ) % 2 == 0)
 			{
 				//std::cout << "Summing current " << det << " to " << matrix[ind][i] << " multiplied per " << tmpDet << std::endl;
-				tot = tot + matrix[ind][i] * tmpDet;
+				tot = tot.add(matrix[ind][i].per(tmpDet));
 			}
 			else
 			{
 				//std::cout << "Current " << det << " subtracted by " << matrix[ind][i] << " multiplied per " << tmpDet << std::endl;
-				tot = tot - matrix[ind][i] * tmpDet;				
+				tot = tot.sub(matrix[ind][i].per(tmpDet));				
 			}
 			tmpJ++;
 		}
@@ -227,7 +219,7 @@ Matrix Matrix::Transposed()
 {
 	int i,j;
 
-	Matrix transpMatrix(rows, columns);
+	Matrix transpMatrix(columns, rows);
 
 	for (i = 0; i < rows; i++)
 	{
@@ -238,4 +230,74 @@ Matrix Matrix::Transposed()
 	}
 
 	return transpMatrix;
+}
+
+Fract Matrix::Cofactor(int r, int c)
+{
+	Matrix tmpMatrix(rows-1, columns-1);
+	Fract cof;
+	int i,j,h,k;
+
+	for (i = 0, h = 0; i < rows; i++)
+	{
+		if (i != r)
+		{
+			for (j = 0, k = 0; j < columns; j++)
+			{
+				if (j != c)
+				{
+					tmpMatrix.matrix[h][k] = matrix[i][j];
+					k++;
+				}	
+			}
+			h++;
+		}
+	}
+	
+	cof = tmpMatrix.Determinant();
+
+	if ((r+c) % 2 != 0)
+		cof.inverse();
+	
+	tmpMatrix.free();
+
+	return cof;
+}
+
+Matrix Matrix::CofactorMatrix()
+{
+	Matrix nu_mat(rows, columns);
+	int i,j;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			nu_mat.matrix[i][j] = Cofactor(i,j);
+		}
+	}
+
+	return nu_mat;
+}
+
+Matrix Matrix::Inverse()
+{
+	Matrix adj = CofactorMatrix().Transposed();
+
+	adj.scalarDivide(Determinant());
+
+	return adj;	
+}
+
+void Matrix::scalarDivide(Fract s)
+{
+	int i,j;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			matrix[i][j] = matrix[i][j].div(s);
+		}
+	}
 }

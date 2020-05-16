@@ -1,36 +1,45 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include "Fract.h"
 #include "Matrix.h"
-//#include "MatList.cpp"
 
 Matrix inputMatrix();
-void showMatrixes(std::vector<Matrix>);
+void showMatrices(std::vector<Matrix>);
 int numsLength(std::string);
-int * getNumbers(std::string);
+Fract * getNumbers(std::string);
+bool searchMatrix(std::vector<Matrix>, std::string);
+std::vector<Matrix> saveMatrix(Matrix, std::vector<Matrix>);
 
 int main()
 {
 	bool on = true;
 	std::string menu;
 	std::string matName;
+	Matrix tmpMatrix;
 	int tmpRows;
 	int tmpColumns;
-	std::vector<Matrix> matrixes;
+	std::vector<Matrix> matrices;
+	std::string tmpName;
 	int tmpTime;
-	int i,j;
+	int tmpNum;
+	int i;
 
-	std::cout << "MATRIX\n";
-
-	i = 0;
+	system("clear");
 
 	while (on)
 	{
+		std::cout << "MATRIX\n";
+
 		std::cout << "1. | Input and save a matrix to work on\n";
 		std::cout << "2. | Generate a random matrix\n";
-		std::cout << "3. | Save an identity matrix\n";
-		std::cout << "4. | Shows current saved matrixes\n";
+		std::cout << "3. | Generate an identity matrix\n";
+		std::cout << "4. | Shows current saved matrices\n";
 		std::cout << "5. | Calculate the determinant of a saved matrix\n";
+		std::cout << "6. | Calculate the transposed of a saved matrix\n";
+		std::cout << "7. | Calculate the inverse of a saved matrix\n";
+		std::cout << "8. | Calculate the cofactor of a saved matrix\n";
+		std::cout << "9. | Divide a saved matrix by a scalar number\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
@@ -38,10 +47,20 @@ int main()
 		if (menu == "1")
 		{
 			std::cout << "Insert numbers separated by spaces, press enter to add new rows and type an empty space to confirm\n";
-			matrixes.push_back(inputMatrix());
+			matrices.push_back(inputMatrix());
 
 			std::cout << "Insert a name for the matrix:\n";
-			std::cin >> matrixes.back().name;
+			while (true)
+			{
+				std::cin >> tmpName;
+				if (!searchMatrix(matrices, tmpName))
+					break;
+				else
+					std::cout << "Name already in use, please insert another one\n";
+			}
+
+			matrices.back().name = tmpName;
+
 			system("clear");
 		}
 		else if (menu == "2")
@@ -51,12 +70,21 @@ int main()
 			std::cout << "Insert matrix columns:\n";
 			std::cin >> tmpColumns;
 			
-			matrixes.push_back(Matrix(tmpRows, tmpColumns));
+			matrices.push_back(Matrix(tmpRows, tmpColumns));
 
 			std::cout << "Insert a name for the matrix:\n";
-			std::cin >> matrixes.back().name;
 
-			matrixes.back().randomGenerate();
+			while (true)
+			{
+				std::cin >> tmpName;
+				if (!searchMatrix(matrices, tmpName))
+					break;
+				else
+					std::cout << "Name already in use, please insert another one\n";
+			}
+
+			matrices.back().randomGenerate();
+			matrices.back().name = tmpName;
 
 			system("clear");
 		}
@@ -65,46 +93,120 @@ int main()
 			std::cout << "Insert matrix dimension:\n";
 			std::cin >> tmpRows;
 
-			matrixes.push_back(Matrix(tmpRows, tmpRows));
+			matrices.push_back(Matrix(tmpRows, tmpRows));
 
 			std::cout << "Insert a name for the matrix:\n";
-			std::cin >> matrixes.back().name;
+			while (true)
+			{
+				std::cin >> tmpName;
 
-			matrixes.back().getIdentity();
+				if (!searchMatrix(matrices, tmpName))
+				{
+					break;
+				}	
+				else
+				{
+					std::cout << "Name already in use, please insert another one\n";
+				}
+			}
 
+			matrices.back().getIdentity();
+			matrices.back().name = tmpName;
 			system("clear");
 		}
 		else if (menu == "4")
 		{
-			showMatrixes(matrixes);
+			showMatrices(matrices);
 		}
-		else if (menu == "5")
+		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9")
 		{
 			system("clear");
 
-			showMatrixes(matrixes);
+			showMatrices(matrices);
 
-			std::cout << "Insert the name of the matrix\n";
-			std::cin >> matName;
-			for (i = 0; i < matrixes.size(); i++)
+			while (true)
 			{
-				if (matrixes[i].name == matName)
+
+				std::cout << "Insert the name of the matrix, or type 'BACK'\n";
+				std::cin >> matName;
+
+				if (searchMatrix(matrices, matName))
 				{
-					if (matrixes[i].rows == matrixes[i].columns)
+					for (i = 0; i < matrices.size(); i++)
 					{
-						tmpTime = time(NULL);
-						std::cout << "Determinant: " <<  matrixes[i].Determinant() << "\n";
-						std::cout << "Calculated in " << time(NULL) - tmpTime << " seconds\n";
+						if (matrices[i].name == matName)
+							break;
 					}
-					else
+					if (menu == "5")
 					{
-						std::cout << "The matrix must be a square\n";
+						if (matrices[i].rows == matrices[i].columns)
+						{
+							tmpTime = time(NULL);
+							std::cout << "Determinant: ";
+
+							matrices[i].Determinant().print();
+							std::cout << "\n";
+
+							tmpTime = time(NULL) - tmpTime;
+				
+							if (tmpTime != 0)
+							{
+								std::cout << "Calculated in " << tmpTime << " seconds\n";
+							}
+							break;
+						}
+						else
+						{
+							std::cout << "The matrix must be a square\n";
+						}
 					}
+					else if (menu == "6")
+					{
+						tmpMatrix = matrices[i].Transposed();
+						std::cout << matName << " transposed:\n";
+						tmpMatrix.printMatrix();
+						matrices = saveMatrix(tmpMatrix, matrices);
+						break;
+					}
+					else if (menu == "7")
+					{
+						tmpMatrix = matrices[i].Inverse();
+						std::cout << matName << " inverse:\n";
+						tmpMatrix.printMatrix();
+						matrices = saveMatrix(tmpMatrix, matrices);
+						break;
+					}
+					else if (menu == "8")
+					{
+						tmpMatrix = matrices[i].CofactorMatrix();
+						std::cout << matName <<" cofactor:\n";
+						tmpMatrix.printMatrix();
+						matrices = saveMatrix(tmpMatrix, matrices);
+						break;
+					}
+					else if (menu == "9")
+					{
+						std::cout << "Type the scalar:\n";
+						std::cin >> tmpNum; 
+						matrices[i].scalarDivide(tmpNum);
+						system("clear");
+						break;
+					}
+				}
+				else if (matName == "BACK")
+				{
+					system("clear");
 					break;
 				}
+				else
+				{
+					std::cout << "This matrix doesn't exist\n\n";
+				}
 			}
+			
 			std::cout << "\n";
 		}
+
 		else if (menu == "0")
 		{
 			on = false;
@@ -117,28 +219,33 @@ int main()
 	}
 }
 
-void showMatrixes(std::vector<Matrix> mats)
+void showMatrices(std::vector<Matrix> mats)
 {
-	int i;
+	int i,j;
 
 	std::cout << "SAVED MATRIXES\n";
 	for (i = 0; i < mats.size(); i++)
 	{
-		std::cout << "---\n";
-		std::cout << mats[i].name << "\n\n";
+		for (j = 0; j < mats[i].name.size(); j++)
+			std::cout << "-";
+		std::cout << "\n";
+		std::cout << mats[i].name << "|\n";
+		std::cout << "-----\n";
 		mats[i].printMatrix();
 		if (mats[i].calcedDet)
 		{
-			std::cout << "Determinant: " << mats[i].det << "\n";
+			std::cout << "\nDeterminant: ";
+			mats[i].det.print();
+			std::cout << "\n";
 		}
-		std::cout << "---\n";
+		std::cout << "-----\n\n";
 	}
 	std::cout << "\n";
 }
 
 Matrix inputMatrix()
 {
-	std::vector <int *> mat;
+	std::vector <Fract *> mat;
 	int * tmp = nullptr;
 	int rows, cols;
 	int i,j;
@@ -148,15 +255,11 @@ Matrix inputMatrix()
 	std::cin.ignore();
 	std::getline(std::cin, row);
 
+	rows = 0;
 	cols = numsLength(row);
-
-	mat.push_back(getNumbers(row));
-
-	rows = 1;
 
 	while (row != " ")
 	{
-		std::getline(std::cin, row);
 		if (numsLength(row) != cols)
 		{
 			std::cout << "Rows must have the same length\n";
@@ -166,6 +269,7 @@ Matrix inputMatrix()
 			mat.push_back(getNumbers(row));
 			rows++;
 		}
+		std::getline(std::cin, row);
 	}
 
 	Matrix nuMatrix(rows, cols);
@@ -186,9 +290,9 @@ Matrix inputMatrix()
 	return nuMatrix;
 }
 
-int * getNumbers(std::string row)
+Fract * getNumbers(std::string row)
 {
-	int * arr = nullptr;
+	Fract * arr = nullptr;
 	bool check = true;
 	int len = 0;
 	int dec;
@@ -196,7 +300,7 @@ int * getNumbers(std::string row)
 
 	len = numsLength(row);
 
-	arr = new int [len];
+	arr = new Fract [len];
 	check = true;
 	dec = 1;
 	j = len-1;
@@ -209,9 +313,13 @@ int * getNumbers(std::string row)
 			j--;
 			check = false;
 		}
-		else if (row[i] != ' ')
+		else if (row[i] == '-')
 		{
-			arr[j] = arr[j] + (row[i] - '0') * dec;
+			arr[j].inverse();
+		}
+		else
+		{
+			arr[j].num = arr[j].num + (row[i] - '0') * dec;
 			dec = dec * 10;
 			check = true;
 		}
@@ -242,3 +350,62 @@ int numsLength(std::string row)
 	return len;
 }
 
+std::vector<Matrix> saveMatrix(Matrix mat, std::vector<Matrix> matrices)
+{
+	std::string choice;
+	std::string matName;
+
+	std::cout << "Do you want to save the matrix? (y/n)\n";
+	while (true)
+	{
+		std::cin >> choice;
+
+		if (choice == "y" || choice == "Y" || choice == "yes")
+		{
+			
+			std::cout << "Insert a name for the matrix:\n";
+			while (true)
+			{
+				std::cin >> matName;
+				if (!searchMatrix(matrices, matName))
+				{
+					break;
+				}
+				else
+				{
+					std::cout << "Name already in use, please insert another one\n";
+				}
+			}
+			mat.name = matName;
+			matrices.push_back(mat);
+			system("clear");
+			break;
+		}
+		else if (choice == "n" || choice == "N" || choice == "no")
+		{
+			mat.free();
+			system("clear");
+			break;
+		}
+		else
+		{
+			std::cout << "Please insert a valid command\n";
+		}
+	}
+	return matrices;
+}
+
+bool searchMatrix(std::vector<Matrix> mats, std::string matName)
+{
+	int i;
+
+	for (i = 0; i < mats.size(); i++)
+	{
+		if (mats[i].name == matName)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
