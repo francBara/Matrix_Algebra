@@ -301,3 +301,16 @@ void Matrix::scalarDivide(Fract s)
 		}
 	}
 }
+
+void Matrix::scalarMultiply(Fract s)
+{
+	int i,j;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			matrix[i][j] = matrix[i][j].per(s);
+		}
+	}
+}

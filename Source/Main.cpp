@@ -39,7 +39,8 @@ int main()
 		std::cout << "6. | Calculate the transposed of a saved matrix\n";
 		std::cout << "7. | Calculate the inverse of a saved matrix\n";
 		std::cout << "8. | Calculate the cofactor of a saved matrix\n";
-		std::cout << "9. | Divide a saved matrix by a scalar number\n";
+		std::cout << "9. | Multiply a saved Matrix by a scalar number\n";
+		std::cout << "10. | Divide a saved matrix by a scalar number\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
@@ -118,7 +119,7 @@ int main()
 		{
 			showMatrices(matrices);
 		}
-		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9")
+		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9" || menu == "10")
 		{
 			system("clear");
 
@@ -199,6 +200,14 @@ int main()
 						break;
 					}
 					else if (menu == "9")
+					{
+						std::cout << "Type the scalar:\n";
+						std::cin >> tmpNum;
+						matrices[i].scalarMultiply(tmpNum);
+						system("clear");
+						break;
+					}
+					else if (menu == "10")
 					{
 						std::cout << "Type the scalar:\n";
 						std::cin >> tmpNum; 

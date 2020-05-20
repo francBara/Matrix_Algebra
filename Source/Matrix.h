@@ -30,6 +30,7 @@ class Matrix
 		Matrix CofactorMatrix();
 		Matrix Inverse();
 		void scalarDivide(Fract);
+		void scalarMultiply(Fract);
 
 	private:
 		Fract calcDeterminant(int, int *);
