@@ -23,7 +23,7 @@ int main()
 	std::string tmpName;
 	int tmpTime;
 	int tmpNum;
-	int i;
+	int i,j;
 
 	system("clear");
 
@@ -41,6 +41,8 @@ int main()
 		std::cout << "8. | Calculate the cofactor of a saved matrix\n";
 		std::cout << "9. | Multiply a saved Matrix by a scalar number\n";
 		std::cout << "10. | Divide a saved matrix by a scalar number\n";
+		std::cout << "11. | Sum two saved matrices\n";
+		std::cout << "12. | Subract two saved matrices\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
@@ -117,9 +119,10 @@ int main()
 		}
 		else if (menu == "4")
 		{
+			system("clear");
 			showMatrices(matrices);
 		}
-		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9" || menu == "10")
+		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9" || menu == "10" || menu == "11" || menu == "12")
 		{
 			system("clear");
 
@@ -214,6 +217,66 @@ int main()
 						matrices[i].scalarDivide(tmpNum);
 						system("clear");
 						break;
+					}
+					else if (menu == "11")
+					{
+						system("clear");
+						showMatrices(matrices);
+						std::cout << "Insert the name of the second matrix to sum:\n";
+						std::cin >> matName;
+						while (matName != "BACK" && !searchMatrix(matrices, matName))
+						{
+							std::cout << "The matrix doesn't exist, please insert another one or type 'BACK'\n";
+							std::cin >> matName;
+						}
+						if (matName == "BACK")
+							break;
+						for (j = 0; j < matrices.size() && matrices[j].name != matName; j++)
+							;
+						matrices.push_back(matrices[i].addMatrix(matrices[j]));
+						std::cout << "Insert a name for the new matrix\n";
+						std::cin >> matName;
+
+						while (searchMatrix(matrices, matName))
+						{
+							std::cout << "Name already in use, please insert another one\n";
+							std::cin >> matName;
+						}
+
+						matrices.back().name = matName;
+
+						system("clear");
+						break;	
+					}
+					else if (menu == "12")
+					{
+						system("clear");
+						showMatrices(matrices);
+						std::cout << "Insert the name of the matrix to subtract:\n";
+						std::cin >> matName;
+						while (matName != "BACK" && !searchMatrix(matrices, matName))
+						{
+							std::cout << "The matrix doesn't exist, please insert another one or type 'BACK'\n";
+							std::cin >> matName;
+						}
+						if (matName == "BACK")
+							break;
+						for (j = 0; j < matrices.size() && matrices[j].name != matName; j++)
+							;
+						matrices.push_back(matrices[i].subMatrix(matrices[j]));
+						std::cout << "Insert a name for the new matrix\n";
+						std::cin >> matName;
+
+						while (searchMatrix(matrices, matName))
+						{
+							std::cout << "Name already in use, please insert another one\n";
+							std::cin >> matName;
+						}
+
+						matrices.back().name = matName;
+
+						system("clear");
+						break;	
 					}
 				}
 				else if (matName == "BACK")

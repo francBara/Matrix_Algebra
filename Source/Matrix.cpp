@@ -314,3 +314,33 @@ void Matrix::scalarMultiply(Fract s)
 		}
 	}
 }
+
+Matrix Matrix::addMatrix(Matrix m)
+{
+	Matrix nu_mat(rows, columns);
+	int i,j;
+	
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			nu_mat.matrix[i][j] = matrix[i][j].add(m.matrix[i][j]);
+		}
+	}
+	return nu_mat;
+}
+
+Matrix Matrix::subMatrix(Matrix m)
+{
+	Matrix nu_mat(rows, columns);
+	int i,j;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < columns; j++)
+		{
+			nu_mat.matrix[i][j] = matrix[i][j].sub(m.matrix[i][j]);
+		}
+	}
+	return nu_mat;
+}

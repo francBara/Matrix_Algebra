@@ -31,6 +31,8 @@ class Matrix
 		Matrix Inverse();
 		void scalarDivide(Fract);
 		void scalarMultiply(Fract);
+		Matrix addMatrix(Matrix);
+		Matrix subMatrix(Matrix);
 
 	private:
 		Fract calcDeterminant(int, int *);
