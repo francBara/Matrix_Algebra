@@ -33,6 +33,7 @@ class Matrix
 		void scalarMultiply(Fract);
 		Matrix addMatrix(Matrix);
 		Matrix subMatrix(Matrix);
+		Matrix multMatrix(Matrix);
 
 	private:
 		Fract calcDeterminant(int, int *);

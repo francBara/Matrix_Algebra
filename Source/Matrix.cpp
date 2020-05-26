@@ -344,3 +344,24 @@ Matrix Matrix::subMatrix(Matrix m)
 	}
 	return nu_mat;
 }
+
+Matrix Matrix::multMatrix(Matrix m)
+{
+	Matrix nu_mat(rows, m.columns);
+	Fract tmpSum;
+	int i,j,k;
+
+	for (i = 0; i < rows; i++)
+	{
+		for (k = 0; k < m.columns; k++)
+		{
+			tmpSum.num = 0;
+			for (j = 0; j < columns; j++)
+			{
+				tmpSum = tmpSum.add(matrix[i][j].per(m.matrix[j][k]));	
+			}
+			nu_mat.matrix[i][k] = tmpSum;
+		}
+	}
+	return nu_mat;
+}

@@ -43,6 +43,7 @@ int main()
 		std::cout << "10. | Divide a saved matrix by a scalar number\n";
 		std::cout << "11. | Sum two saved matrices\n";
 		std::cout << "12. | Subract two saved matrices\n";
+		std::cout << "13 | Multiply to saved matrices\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
@@ -122,7 +123,7 @@ int main()
 			system("clear");
 			showMatrices(matrices);
 		}
-		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9" || menu == "10" || menu == "11" || menu == "12")
+		else if (menu == "5" || menu == "6" || menu == "7" || menu == "8" || menu == "9" || menu == "10" || menu == "11" || menu == "12" || menu == "13")
 		{
 			system("clear");
 
@@ -264,6 +265,43 @@ int main()
 						for (j = 0; j < matrices.size() && matrices[j].name != matName; j++)
 							;
 						matrices.push_back(matrices[i].subMatrix(matrices[j]));
+						std::cout << "Insert a name for the new matrix\n";
+						std::cin >> matName;
+
+						while (searchMatrix(matrices, matName))
+						{
+							std::cout << "Name already in use, please insert another one\n";
+							std::cin >> matName;
+						}
+
+						matrices.back().name = matName;
+
+						system("clear");
+						break;	
+					}
+					else if (menu == "13")
+					{
+						system("clear");
+						showMatrices(matrices);
+						std::cout << "Insert the name of the matrix to multiply:\n";
+						std::cin >> matName;
+						while (matName != "BACK" && !searchMatrix(matrices, matName))
+						{
+							std::cout << "The matrix doesn't exist, please insert another one or type 'BACK'\n";
+							std::cin >> matName;
+						}
+						if (matName == "BACK")
+							break;
+						
+						for (j = 0; j < matrices.size() && matrices[j].name != matName; j++)
+							;
+						if (matrices[i].columns != matrices[j].rows)
+						{
+							std::cout << "Matrix A columns must be equal to matrix B rows\n";
+							break;
+						}
+
+						matrices.push_back(matrices[i].multMatrix(matrices[j]));
 						std::cout << "Insert a name for the new matrix\n";
 						std::cin >> matName;
 
