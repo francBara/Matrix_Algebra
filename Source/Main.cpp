@@ -43,7 +43,7 @@ int main()
 		std::cout << "10. | Divide a saved matrix by a scalar number\n";
 		std::cout << "11. | Sum two saved matrices\n";
 		std::cout << "12. | Subract two saved matrices\n";
-		std::cout << "13 | Multiply to saved matrices\n";
+		std::cout << "13 | Multiply two saved matrices\n";
 		std::cout << "0. | Quit\n";
 
 		std::cin >> menu;
